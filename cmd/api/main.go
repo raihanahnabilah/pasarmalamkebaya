@@ -31,17 +31,23 @@ func main() {
 	// Initializing Database Connection
 	db := mysql.GetDatabaseConnection()
 
-	// To plug in repo, usecase, and handler
+	// For Registering
 	userRepo := repository.NewUserRepository(db)
 	userUsecase := usecase.NewUserUsecase(userRepo)
 	registerUsecase := usecase.NewRegisterUsecase(userRepo, userUsecase)
 	registerHandler := handler.NewRegisterHandler(registerUsecase)
 	registerHandler.Route(&router.RouterGroup)
 
+	// For Login!
+	oauthRepo := repository.NewOauthRepository(db)
+	oauthUsecase := usecase.NewOauthUsecase(oauthRepo)
+	loginUsecase := usecase.NewLoginUsecase(oauthRepo, oauthUsecase, userUsecase)
+	loginHandler := handler.NewLoginHandler(loginUsecase)
+	loginHandler.Route(&router.RouterGroup)
+
 	// API Routers!
 	// api := router.Group("api/v1")
 	// api.GET("/register", registerHandler.Register)
 
 	router.Run() // listen and serve on localhost:8080
-
 }

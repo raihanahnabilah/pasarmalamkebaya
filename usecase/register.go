@@ -59,7 +59,7 @@ func (u *registerUsecase) Register(dto dto.RegisterRequestBody) (entity.User, er
 		return entity.User{}, err
 	}
 
-	// Send to SENDGRID
+	// TODO: Send to SENDGRID
 
 	return user, nil
 

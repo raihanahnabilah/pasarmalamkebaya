@@ -1,4 +1,4 @@
-package handler
+package http
 
 import (
 	"net/http"
@@ -18,32 +18,32 @@ func NewRegisterHandler(registerUsecase usecase.RegisterUsecase) *registerHandle
 }
 
 func (h *registerHandler) Route(r *gin.RouterGroup) {
-	r.GET("/api/v1/register", h.Register)
+	r.POST("/api/v1/register", h.Register)
 }
 
 func (h *registerHandler) Register(c *gin.Context) {
-	var dto dto.RegisterRequestBody
+	var input dto.RegisterRequestBody
 
 	// Validate the inputs!
-	err := c.ShouldBindJSON(&dto)
+	err := c.ShouldBindJSON(&input)
 	if err != nil {
 		errorMessage := gin.H{"error": err.Error()}
-		response := response.Response("Failed to add user", 400, "Bad request", errorMessage)
+		response := response.Response("Failed to add user", 400, http.StatusText(http.StatusBadRequest), errorMessage)
 		c.JSON(http.StatusBadRequest, response)
 		c.Abort()
 		return
 	}
 
 	// Plug in the data!
-	user, err := h.registerUsecase.Register(dto)
+	user, err := h.registerUsecase.Register(input)
 
 	if err != nil {
 		errorMessage := gin.H{"error": err.Error()}
-		response := response.Response("Failed to add user", 400, "Bad request", errorMessage)
+		response := response.Response("Failed to add user", 400, http.StatusText(http.StatusBadRequest), errorMessage)
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
-	response := response.Response("Added user", 200, "Success", user)
+	response := response.Response("Added user", http.StatusOK, http.StatusText(http.StatusOK), user)
 	c.JSON(http.StatusOK, response)
 }

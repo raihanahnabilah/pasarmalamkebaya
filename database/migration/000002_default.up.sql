@@ -15,6 +15,6 @@ CREATE TABLE IF NOT EXISTS users (
     INDEX idx_user_email (`email`),
     INDEX idx_user_created_by (`created_by`),
     INDEX idx_user_updated_by (`updated_by`),
-    CONSTRAINT FK_user_created_by FOREIGN KEY (`created_by`) REFERENCES administrator(`id`) ON DELETE SET NULL,
-    CONSTRAINT FK_user_updated_by FOREIGN KEY (`updated_by`) REFERENCES administrator(`id`) ON DELETE SET NULL
+    CONSTRAINT FK_user_created_by FOREIGN KEY (`created_by`) REFERENCES administrators(`id`) ON DELETE SET NULL,
+    CONSTRAINT FK_user_updated_by FOREIGN KEY (`updated_by`) REFERENCES administrators(`id`) ON DELETE SET NULL
 ) ENGINE = INNODB AUTO_INCREMENT = 1 DEFAULT CHARSET = utf8;
