@@ -20,18 +20,19 @@ type RegisterUsecase interface {
 type registerUsecase struct {
 	userRepo    repository.UserRepo
 	userUsecase UserUsecase
+	mailUsecase MailUsecase
 }
 
-func NewRegisterUsecase(userRepo repository.UserRepo, userUsecase UserUsecase) RegisterUsecase {
-	return &registerUsecase{userRepo, userUsecase}
+func NewRegisterUsecase(userRepo repository.UserRepo, userUsecase UserUsecase, mailUsecase MailUsecase) RegisterUsecase {
+	return &registerUsecase{userRepo, userUsecase, mailUsecase}
 }
 
-func (u *registerUsecase) Register(dto dto.RegisterRequestBody) (entity.User, error) {
+func (u *registerUsecase) Register(input dto.RegisterRequestBody) (entity.User, error) {
 
 	// When you register, you give inputs: Name, Email, Password
 
 	// Check if the user is already registered
-	userFound, err := u.userUsecase.FindUserByEmail(dto.Email)
+	userFound, err := u.userUsecase.FindUserByEmail(input.Email)
 	// Have to check if the error is because the record is not found or any other errors?
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return entity.User{}, err
@@ -42,12 +43,12 @@ func (u *registerUsecase) Register(dto dto.RegisterRequestBody) (entity.User, er
 	}
 
 	// Hashed the password!
-	hashed, _ := bcrypt.GenerateFromPassword([]byte(dto.Password), bcrypt.DefaultCost)
+	hashed, _ := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
 
 	// Make a code!
 	userRegistered := entity.User{
-		Name:         dto.Name,
-		Email:        dto.Email,
+		Name:         input.Name,
+		Email:        input.Email,
 		Password:     string(hashed),
 		CodeVerified: utils.RandStringBytes(32),
 	}
@@ -59,7 +60,15 @@ func (u *registerUsecase) Register(dto dto.RegisterRequestBody) (entity.User, er
 		return entity.User{}, err
 	}
 
-	// TODO: Send to SENDGRID
+	// Send verification to SendGrid
+	sendVerification := dto.RegisterEmailVerification{
+		Name:             input.Name,
+		Subject:          "Verify your email to Pasar Malam Kebaya!",
+		Email:            input.Email,
+		VerificationCode: userRegistered.CodeVerified,
+	}
+
+	u.mailUsecase.SendEmailVerification(sendVerification)
 
 	return user, nil
 

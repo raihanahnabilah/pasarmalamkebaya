@@ -34,7 +34,8 @@ func main() {
 	// For Registering
 	userRepo := repository.NewUserRepository(db)
 	userUsecase := usecase.NewUserUsecase(userRepo)
-	registerUsecase := usecase.NewRegisterUsecase(userRepo, userUsecase)
+	mailUsecase := usecase.NewMailUsecase()
+	registerUsecase := usecase.NewRegisterUsecase(userRepo, userUsecase, mailUsecase)
 	registerHandler := handler.NewRegisterHandler(registerUsecase)
 	registerHandler.Route(&router.RouterGroup)
 
