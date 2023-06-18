@@ -10,31 +10,19 @@ import (
 // Authentication Flow: Login -> get access token. To get access token -> confirm email exist (user usecase) -> confirm password (user usecase)
 // --> confirm client ID and client secret exists (on oauth_client table) --> they exist? create an access token, push it to oauth_access_token (oauth_acces)
 
-type OauthRepo interface {
-	FindUserByClientIDAndSecretID(clientID string, clientSecret string) (entity.OauthClient, error)
+type OauthAccessRepo interface {
 	CreateAccessToken(accessToken entity.OauthAccessToken) (entity.OauthAccessToken, error)
 }
 
-type oauthRepo struct {
+type oauthAccessRepo struct {
 	db *gorm.DB
 }
 
-func NewOauthRepository(db *gorm.DB) *oauthRepo {
-	return &oauthRepo{db}
+func NewOauthAccessRepository(db *gorm.DB) *oauthAccessRepo {
+	return &oauthAccessRepo{db}
 }
 
-func (r *oauthRepo) FindUserByClientIDAndSecretID(clientID string, clientSecret string) (entity.OauthClient, error) {
-	var oauth entity.OauthClient
-
-	err := r.db.Where("client_id = ?", clientID).Where("client_secret = ?", clientSecret).First(&oauth).Error
-	if err != nil {
-		return oauth, err
-	}
-
-	return oauth, nil
-}
-
-func (r *oauthRepo) CreateAccessToken(accessToken entity.OauthAccessToken) (entity.OauthAccessToken, error) {
+func (r *oauthAccessRepo) CreateAccessToken(accessToken entity.OauthAccessToken) (entity.OauthAccessToken, error) {
 	err := r.db.Create(&accessToken).Error
 	if err != nil {
 		return accessToken, err

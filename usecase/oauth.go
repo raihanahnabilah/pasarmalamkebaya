@@ -10,10 +10,10 @@ type OauthUsecase interface {
 }
 
 type oauthUsecase struct {
-	oauthRepo repository.OauthRepo
+	oauthRepo repository.OauthClientRepo
 }
 
-func NewOauthUsecase(oauthRepo repository.OauthRepo) OauthUsecase {
+func NewOauthUsecase(oauthRepo repository.OauthClientRepo) OauthUsecase {
 	return &oauthUsecase{oauthRepo}
 }
 

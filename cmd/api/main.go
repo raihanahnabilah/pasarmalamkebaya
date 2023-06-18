@@ -39,9 +39,10 @@ func main() {
 	registerHandler.Route(&router.RouterGroup)
 
 	// For Login!
-	oauthRepo := repository.NewOauthRepository(db)
-	oauthUsecase := usecase.NewOauthUsecase(oauthRepo)
-	loginUsecase := usecase.NewLoginUsecase(oauthRepo, oauthUsecase, userUsecase)
+	oauthAccessRepo := repository.NewOauthAccessRepository(db)
+	oauthClientRepo := repository.NewOauthClientRepository(db)
+	oauthUsecase := usecase.NewOauthUsecase(oauthClientRepo)
+	loginUsecase := usecase.NewLoginUsecase(oauthAccessRepo, oauthUsecase, userUsecase)
 	loginHandler := handler.NewLoginHandler(loginUsecase)
 	loginHandler.Route(&router.RouterGroup)
 

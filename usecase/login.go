@@ -16,13 +16,13 @@ type LoginUsecase interface {
 }
 
 type loginUsecase struct {
-	oauthRepo    repository.OauthRepo
-	oauthUsecase OauthUsecase
-	userUsecase  UserUsecase
+	oauthAccessRepo repository.OauthAccessRepo
+	oauthUsecase    OauthUsecase
+	userUsecase     UserUsecase
 }
 
-func NewLoginUsecase(oauthRepo repository.OauthRepo, oauthUsecase OauthUsecase, userUsecase UserUsecase) LoginUsecase {
-	return &loginUsecase{oauthRepo, oauthUsecase, userUsecase}
+func NewLoginUsecase(oauthAccessRepo repository.OauthAccessRepo, oauthUsecase OauthUsecase, userUsecase UserUsecase) LoginUsecase {
+	return &loginUsecase{oauthAccessRepo, oauthUsecase, userUsecase}
 }
 
 // TODO: Please implement this!
@@ -76,7 +76,7 @@ func (u *loginUsecase) Login(input dto.LoginRequestBody) (dto.LoginResponse, err
 		Scope:     "*",
 		ExpiredAt: &claims.ExpiresAt.Time,
 	}
-	oauthAccessToken, err := u.oauthRepo.CreateAccessToken(accessToken)
+	oauthAccessToken, err := u.oauthAccessRepo.CreateAccessToken(accessToken)
 	if err != nil {
 		return dto.LoginResponse{}, err
 	}
